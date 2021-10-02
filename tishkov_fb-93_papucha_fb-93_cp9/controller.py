@@ -1,30 +1,37 @@
 import os
 
 class Controller:
-
-    def info_command(command):
+    def info_command(self, command):
         """Show information about all commands 
         or about specific one """
         if command == "CREATE":
             #TODO: Write CREATE command description
+            #print(description)
+            print("CREATE")
         elif command == "INSERT":
             #TODO: Write INSERT command description
+            print()
         elif command == "SELECT":
             #TODO: Write SELECT command description
+            print()
         elif command == "ALL":
+            print()
             #TODO: Show all commands description 
             # Maybe it`s better to use recursion
             # e.g. info_command("CREATE")
             #      info_command("INSERT") ...
 
-    def parse_command(command):
+    def parse_command(self, command):
         """Recognize specific command and call it"""
         if command[0] == "CREATE":
             #TODO: call CREATE request
+            print()
         elif command[0] == "INSERT":
             #TODO: call INSERT request
+            print()
         elif command[0] == "SELECT":
             #TODO: call SELECT request
+            print()
         else:
             print("Wrong command, try again!")
             #TODO: Show commands info
@@ -46,7 +53,7 @@ class Request:
             # It is better to add file name to error log
 
         try:
-            data_file = open(collection_name + "/data.txt", "w")
+            data_file = open(collection_name + "/data.txt", "w") 
             data_file.write("collection_name: " + collection_name)
             data_file.close()
         except OSError as error:
@@ -66,20 +73,25 @@ class Request:
 
         doc_counter = doc_counter + 1
 
-    def INSERT(collection_name, doc_str):
+    def INSERT(self, collection_name, doc_str):
         """Insert document with value /doc_str/ 
         to collection /collection_name/"""
 
-    def SELECT():
+    def SELECT(self):
         #TODO: Complete functionality
+        print()
 
 def info_global():
     """Show app descrition 
     (The goal and the basic instructions)"""
     #TODO: Add full description for application
+    print("HEllo!")
 
 def main():
-    #TODO: Create loop for user
+    #Example:
+    controller = Controller()
+    controller.info_command("CREATE")
+        
 
 if __name__ == '__main__':
-    main(sys.argv)
+    main()
