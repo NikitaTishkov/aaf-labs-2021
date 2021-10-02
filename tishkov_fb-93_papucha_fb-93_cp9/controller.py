@@ -7,11 +7,11 @@ class Controller:
         or about specific one """
         if command == "CREATE":
             #TODO: Write CREATE command description
-        else if command == "INSERT":
+        elif command == "INSERT":
             #TODO: Write INSERT command description
-        else if command == "SELECT":
+        elif command == "SELECT":
             #TODO: Write SELECT command description
-        else if command == "ALL":
+        elif command == "ALL":
             #TODO: Show all commands description 
             # Maybe it`s better to use recursion
             # e.g. info_command("CREATE")
@@ -21,11 +21,11 @@ class Controller:
         """Recognize specific command and call it"""
         if command[0] == "CREATE":
             #TODO: call CREATE request
-        else if command[0] == "INSERT":
+        elif command[0] == "INSERT":
             #TODO: call INSERT request
-        else if command[0] == "SELECT":
+        elif command[0] == "SELECT":
             #TODO: call SELECT request
-        else
+        else:
             print("Wrong command, try again!")
             #TODO: Show commands info
          
@@ -66,7 +66,7 @@ class Request:
 
         doc_counter = doc_counter + 1
 
-    def INSERT(collection_name, doc_str)
+    def INSERT(collection_name, doc_str):
         """Insert document with value /doc_str/ 
         to collection /collection_name/"""
 
