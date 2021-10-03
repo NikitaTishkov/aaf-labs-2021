@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import os
 import json
 class Controller:
@@ -9,20 +10,29 @@ class Controller:
         or about specific one """
         if command == "CREATE":
             #TODO: Write CREATE command description
-            #print(description)
-            print("CREATE")
+            print("CREATE - creating a new collection")
+            print("Example:")
+            print("CREATE wiki_articles; ")
         elif command == "INSERT":
             #TODO: Write INSERT command description
-            print()
+            print("INSERT - add a new document to the collection")
+            print("Example:")
+            print("INSERT wiki_articles “The word 'algorithm' has its roots in Latinizing the ... ”;")
         elif command == "SELECT":
             #TODO: Write SELECT command description
-            print()
+            print("SEARCH - search for documents in the collection")
+            print("Example:")
+            print("SEARCH wiki_articles;")
+            print("SEARCH wiki_articles WHERE “algorithm”; ('algorithm')")
+            print("SEARCH wiki_articles WHERE “haa” - “haz”; (has)")
+            print("SEARCH wiki_articles WHERE “has” <2> “roots”; (its)")
         elif command == "ALL":
-            print()
             #TODO: Show all commands description 
             # Maybe it`s better to use recursion
-            # e.g. info_command("CREATE")
-            #      info_command("INSERT") ...
+            controller = Controller()
+            controller.info_command("CREATE")
+            controller.info_command("INSERT")
+            controller.info_command("SELECT")
 
     def parse_command(self, command):
         """Recognize specific command and call it"""
@@ -93,9 +103,8 @@ def info_global():
 def main():
     #Example:
     controller = Controller()
-    com = input()
-    print(com)
-    controller.parse_command(com)
+    controller.info_command("ALL")
+
         
 
 if __name__ == '__main__':
