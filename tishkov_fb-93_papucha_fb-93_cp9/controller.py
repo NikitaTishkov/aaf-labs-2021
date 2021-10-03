@@ -1,6 +1,9 @@
 import os
-
+import json
 class Controller:
+    def __init__(self):
+        self.request = Request()
+
     def info_command(self, command):
         """Show information about all commands 
         or about specific one """
@@ -23,13 +26,13 @@ class Controller:
 
     def parse_command(self, command):
         """Recognize specific command and call it"""
-        if command[0] == "CREATE":
-            #TODO: call CREATE request
-            print()
-        elif command[0] == "INSERT":
+        if command.split()[0] == "CREATE":
+            #call CREATE request
+            self.request.CREATE(command.split()[1])
+        elif command.split()[0] == "INSERT":
             #TODO: call INSERT request
             print()
-        elif command[0] == "SELECT":
+        elif command.split()[0] == "SELECT":
             #TODO: call SELECT request
             print()
         else:
@@ -41,7 +44,7 @@ class Request:
     def __init__(self):
         self.doc_counter = 0
 
-    def CREATE(collection_name):
+    def CREATE(self, collection_name):
         """Create collection 
         with name /collection_name/ for docs"""
 
@@ -70,8 +73,8 @@ class Request:
             print("Could not open/read file")
             print(error)
             # It is better to add file name to error log
-
-        doc_counter = doc_counter + 1
+        self.doc_counter = self.doc_counter + 1
+        print(collection_name, " was succesfully created!")
 
     def INSERT(self, collection_name, doc_str):
         """Insert document with value /doc_str/ 
@@ -90,7 +93,9 @@ def info_global():
 def main():
     #Example:
     controller = Controller()
-    controller.info_command("CREATE")
+    com = input()
+    print(com)
+    controller.parse_command(com)
         
 
 if __name__ == '__main__':
