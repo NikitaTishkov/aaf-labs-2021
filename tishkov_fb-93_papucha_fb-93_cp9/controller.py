@@ -34,17 +34,25 @@ class Controller:
             controller.info_command("INSERT")
             controller.info_command("SELECT")
 
+    def parse_code(self, text):
+        """Splits string into commands and parse them"""
+        parsed_commands = text.split("; ")
+        print(parsed_commands)
+        for command in parsed_commands:
+            self.parse_command(command)
+        
+
     def parse_command(self, command):
         """Recognize specific command and call it"""
-        if command.split()[0] == "CREATE":
+        if command.split()[0].lower() == "CREATE":
             #call CREATE request
             self.request.CREATE(command.split()[1])
-        elif command.split()[0] == "INSERT":
+        elif command.split()[0].lower() == "INSERT":
             #TODO: call INSERT request
-            print()
-        elif command.split()[0] == "SELECT":
+            print("INSERT")
+        elif command.split()[0].lower() == "SELECT":
             #TODO: call SELECT request
-            print()
+            print("SELECT")
         else:
             print("Wrong command, try again!")
             #TODO: Show commands info
@@ -103,9 +111,9 @@ def info_global():
 def main():
     #Example:
     controller = Controller()
-    controller.info_command("ALL")
+    s = input()
+    controller.parse_code(s)
 
-        
 
 if __name__ == '__main__':
     main()
