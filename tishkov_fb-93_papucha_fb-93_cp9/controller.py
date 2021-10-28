@@ -18,7 +18,7 @@ class Controller:
             print("INSERT - add a new document to the collection")
             print("Example:")
             print("INSERT wiki_articles “The word 'algorithm' has its roots in Latinizing the ... ”;")
-        elif command == "SELECT":
+        elif command == "SEARCH":
             #TODO: Write SELECT command description
             print("SEARCH - search for documents in the collection")
             print("Example:")
@@ -32,7 +32,7 @@ class Controller:
             controller = Controller()
             controller.info_command("CREATE")
             controller.info_command("INSERT")
-            controller.info_command("SELECT")
+            controller.info_command("SEARCH")
 
     def parse_code(self, text):
         """Splits string into commands and parse them"""
@@ -50,9 +50,9 @@ class Controller:
         elif command.split()[0].lower() == "INSERT":
             #TODO: call INSERT request
             print("INSERT")
-        elif command.split()[0].lower() == "SELECT":
-            #TODO: call SELECT request
-            print("SELECT")
+        elif command.split()[0].lower() == "SEARCH":
+            #TODO: call SEARCH request
+            print("SEARCH")
         else:
             print("Wrong command, try again!")
             #TODO: Show commands info
@@ -98,7 +98,7 @@ class Request:
         """Insert document with value /doc_str/ 
         to collection /collection_name/"""
 
-    def SELECT(self):
+    def SEARCH(self):
         #TODO: Complete functionality
         print()
 
