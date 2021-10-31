@@ -24,12 +24,19 @@ class Controller:
             print("SEARCH wiki_articles WHERE “haa” - “haz”; (has)")
             print("SEARCH wiki_articles WHERE “has” <2> “roots”; (its)")
         elif command == "PRINT_INDEX":
-            #TODO: Add PRINT_INDEX command description
-            pass
+            print("PRINT_INDEX - display of the internal structure of the inverted index built for the collection")
+            print("Example:")
+            print("PRINT_INDEX collection_name;")
+            print("The output will be of this type:")
+            print("word:")
+            print("document->[word position numbers")
+            print("be:")
+            print("d1 -> [2, 6]")
         elif command == "ALL":
             self.info_command("CREATE")
             self.info_command("INSERT")
             self.info_command("SEARCH")
+            self.info_command("PRINT_INDEX")
 
     def parse_code(self, text):
         """Splits string into commands and parse them"""
@@ -119,6 +126,7 @@ def main():
     s = input()
     controller.parse_code(s)
 
-
 if __name__ == '__main__':
     main()
+    
+    
