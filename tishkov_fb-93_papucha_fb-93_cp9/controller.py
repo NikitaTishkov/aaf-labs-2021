@@ -115,10 +115,7 @@ class Request:
         pass
 
 def info_global():
-    """Show app descrition 
-    (The goal and the basic instructions)"""
-    #TODO: Add full description for application
-    pass
+    print("Collection of text documents with full-text search./n Our program allows you to search for words in several documents at once. The program analyzes the documents that are attached to the collections, selects individual words from them and saves a list of items where the word occurs within the document./n This can be convenient for accountants because they have a lot of documents that need to be processed./n This program has four commands that will help the user to use:/n CREATE collection_name; - creating a new collection called collection_name./n INSERT collection_name “value”; - adding a new document to the collection collection_name./n PRINT_INDEX collection_name; - display of the internal structure of the inverted index built for the collection collection_name./n SEARCH collection_name [WHERE query]; - search for documents in the collection collection_name.")
 
 def main():
     #Example:
