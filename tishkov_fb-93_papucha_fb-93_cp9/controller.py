@@ -136,14 +136,18 @@ class Request:
 
         i = 0
         for word in doc_str.split():
-            index_table.update({word: {doc_counter[str(collection_name)]:i}})
+            words_addr_list = []
+            if index_table.get(word) != None:
+                if index_table.get(word).get(doc_counter[collection_name]) != None:
+                    words_addr_list = index_table.get(word).get(doc_counter[collection_name])
+            words_addr_list.append(i)
+            index_table.update({word: {doc_counter[collection_name]:words_addr_list}})
             i = i + 1
         index_table_file = open(collection_name + "/indexes.json", "w")
         index_table_file.write(json.dumps(index_table, indent=4))
         index_table_file.close()
         doc_counter_file = open("doc_counter.json", "w")
         doc_counter.update({collection_name: doc_counter[collection_name] + 1})
-        print(doc_counter)
         doc_counter_file.write(json.dumps(doc_counter, indent=4))
         doc_counter_file.close()
 
