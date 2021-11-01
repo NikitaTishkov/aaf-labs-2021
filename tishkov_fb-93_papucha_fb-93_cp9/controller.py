@@ -41,6 +41,8 @@ class Controller:
 
     def parse_code(self, text):
         """Splits string into commands and parse them"""
+        if text[-1] == ';':
+            text = text[:text.rfind(';')]
         parsed_commands = text.split("; ")
         #print(parsed_commands)
         for command in parsed_commands:
@@ -104,7 +106,7 @@ class Request:
         
         try:
             doc_counter = {}
-            if not Path('"doc_counter.json"').exists():
+            if not Path("doc_counter.json").exists():
                 doc_counter_file = open("doc_counter.json", "w")
                 doc_counter_file.write('{}')
                 doc_counter_file.close()
@@ -146,6 +148,8 @@ class Request:
         index_table_file = open(collection_name + "/indexes.json", "w")
         index_table_file.write(json.dumps(index_table, indent=4))
         index_table_file.close()
+        data_file = open(collection_name + "/data.txt", "a")
+        data_file.write("\n\n\ndoc #" + str(doc_counter[collection_name]) + ":\n" + doc_str)
         doc_counter_file = open("doc_counter.json", "w")
         doc_counter.update({collection_name: doc_counter[collection_name] + 1})
         doc_counter_file.write(json.dumps(doc_counter, indent=4))
