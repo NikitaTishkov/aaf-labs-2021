@@ -127,7 +127,6 @@ class Request:
     def INSERT(self, collection_name, doc_str):
         """Insert document with value /doc_str/ 
         to collection /collection_name/"""
-        #TODO: Complete functionality
         index_table_file = open(collection_name + "/indexes.json", "r")
         index_table = json.loads(index_table_file.read())
         index_table_file.close()
@@ -148,8 +147,10 @@ class Request:
         index_table_file = open(collection_name + "/indexes.json", "w")
         index_table_file.write(json.dumps(index_table, indent=4))
         index_table_file.close()
+
         data_file = open(collection_name + "/data.txt", "a")
         data_file.write("\n\n\ndoc #" + str(doc_counter[collection_name]) + ":\n" + doc_str)
+        data_file.close()
         doc_counter_file = open("doc_counter.json", "w")
         doc_counter.update({collection_name: doc_counter[collection_name] + 1})
         doc_counter_file.write(json.dumps(doc_counter, indent=4))
