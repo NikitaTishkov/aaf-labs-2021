@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import json
+from pathlib import Path
 class Controller:
     def __init__(self):
         self.request = Request()
@@ -40,6 +41,8 @@ class Controller:
 
     def parse_code(self, text):
         """Splits string into commands and parse them"""
+        if text[-1] == ';':
+            text = text[:text.rfind(';')]
         parsed_commands = text.split("; ")
         #print(parsed_commands)
         for command in parsed_commands:
@@ -54,6 +57,8 @@ class Controller:
         elif command.split()[0].upper() == "INSERT":
             #TODO: call INSERT request
             print("INSERT")
+            doc_str = command[command.find('"') + 1:command.rfind('"') - 1]
+            self.request.INSERT(command.split()[1], doc_str)
         elif command.split()[0].upper() == "SEARCH":
             #TODO: call SEARCH request
             print("SEARCH")
@@ -67,7 +72,7 @@ class Controller:
 class Request:
 
     def __init__(self):
-        self.doc_counter = 0
+        pass
 
     def CREATE(self, collection_name):
         """Create collection 
@@ -90,19 +95,66 @@ class Request:
             # It is better to add file name to error log
 
         try:
-            index_table = open(collection_name + "/indexes.json", "w")
-            index_table.close()
+            index_table_file = open(collection_name + "/indexes.json", "w")
+            index_table = '{}'
+            index_table_file.write(index_table)
+            index_table_file.close()
         except OSError as error:
             print("Could not open/read file")
             print(error)
             # It is better to add file name to error log
-        self.doc_counter = self.doc_counter + 1
+        
+        try:
+            doc_counter = {}
+            if not Path("doc_counter.json").exists():
+                doc_counter_file = open("doc_counter.json", "w")
+                doc_counter_file.write('{}')
+                doc_counter_file.close()
+            else: 
+                doc_counter_file = open("doc_counter.json", "r")
+                doc_counter = json.loads(doc_counter_file.read())
+                doc_counter_file.close()
+            doc_counter.update({collection_name: 0})
+            doc_counter_file = open("doc_counter.json", "w")
+            doc_counter_file.write(json.dumps(doc_counter, indent=4))
+            doc_counter_file.close()
+        except OSError as error:
+            print("Could not open/read file")
+            print(error)
+            # It is better to add file name to error log
         print(collection_name, " was succesfully created!")
 
     def INSERT(self, collection_name, doc_str):
         """Insert document with value /doc_str/ 
         to collection /collection_name/"""
         #TODO: Complete functionality
+        index_table_file = open(collection_name + "/indexes.json", "r")
+        index_table = json.loads(index_table_file.read())
+        index_table_file.close()
+
+        doc_counter_file = open("doc_counter.json", "r")
+        doc_counter = json.loads(doc_counter_file.read())
+        doc_counter_file.close()
+
+        i = 0
+        for word in doc_str.split():
+            words_addr_list = []
+            if index_table.get(word) != None:
+                if index_table.get(word).get(doc_counter[collection_name]) != None:
+                    words_addr_list = index_table.get(word).get(doc_counter[collection_name])
+            words_addr_list.append(i)
+            index_table.update({word: {doc_counter[collection_name]:words_addr_list}})
+            i = i + 1
+        index_table_file = open(collection_name + "/indexes.json", "w")
+        index_table_file.write(json.dumps(index_table, indent=4))
+        index_table_file.close()
+        data_file = open(collection_name + "/data.txt", "a")
+        data_file.write("\n\n\ndoc #" + str(doc_counter[collection_name]) + ":\n" + doc_str)
+        doc_counter_file = open("doc_counter.json", "w")
+        doc_counter.update({collection_name: doc_counter[collection_name] + 1})
+        doc_counter_file.write(json.dumps(doc_counter, indent=4))
+        doc_counter_file.close()
+
     def SEARCH(self, collection_name):
         """Full text search in specific 
         collection /collection_name/"""
