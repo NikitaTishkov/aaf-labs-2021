@@ -55,8 +55,6 @@ class Controller:
             #call CREATE request
             self.request.CREATE(command.split()[1])
         elif command.split()[0].upper() == "INSERT":
-            #TODO: call INSERT request
-            print("INSERT")
             doc_str = command[command.find('"') + 1:command.rfind('"') - 1]
             self.request.INSERT(command.split()[1], doc_str)
         elif command.split()[0].upper() == "SEARCH":
@@ -77,7 +75,6 @@ class Request:
     def CREATE(self, collection_name):
         """Create collection 
         with name /collection_name/ for docs"""
-
         try:
             os.mkdir("./" + collection_name)
         except OSError as error:
@@ -155,6 +152,7 @@ class Request:
         doc_counter.update({collection_name: doc_counter[collection_name] + 1})
         doc_counter_file.write(json.dumps(doc_counter, indent=4))
         doc_counter_file.close()
+        print("Insertion was succesfully done!")
 
     def SEARCH(self, collection_name):
         """Full text search in specific 
