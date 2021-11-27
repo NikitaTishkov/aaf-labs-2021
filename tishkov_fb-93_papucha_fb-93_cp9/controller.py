@@ -55,14 +55,15 @@ class Controller:
             # call CREATE request
             self.request.CREATE(command.split()[1])
         elif command.split()[0].upper() == "INSERT":
+            # call INSERT request
             doc_str = command[command.find('"') + 1:command.rfind('"') - 1]
             self.request.INSERT(command.split()[1], doc_str)
         elif command.split()[0].upper() == "SEARCH":
             # TODO: call SEARCH request
             print("SEARCH")
         elif command.split()[0].upper() == "PRINT_INDEX":
-            # TODO: call PRINT_INDEX request
-            print("PRINT_INDEX")
+            # call PRINT_INDEX request
+            self.request.PRINT_INDEX(command.split()[1])
         else:
             print("Wrong command, try again!")
             # TODO: Show commands info
@@ -120,7 +121,7 @@ class Request:
             print("Could not open/read file")
             print(error)
             # It is better to add file name to error log
-        print(collection_name, " was succesfully created!")
+        print(collection_name, " was successfully created!")
 
     def INSERT(self, collection_name, doc_str):
         """Insert document with value /doc_str/ 
@@ -136,11 +137,14 @@ class Request:
         i = 0
         for word in doc_str.split():
             words_adr_list = list()
+            docs_adr_dict = dict()
             if index_table.get(word) is not None:
+                docs_adr_dict = index_table.get(word)
                 if index_table.get(word).get(doc_counter[collection_name]) is not None:
                     words_adr_list = index_table.get(word).get(doc_counter[collection_name])
             words_adr_list.append(i)
-            index_table.update({word: {doc_counter[collection_name]:words_adr_list}})
+            docs_adr_dict.update({doc_counter[collection_name]: words_adr_list})
+            index_table.update({word: docs_adr_dict})
             i = i + 1
         index_table_file = open(collection_name + "/indexes.json", "w")
         index_table_file.write(json.dumps(index_table, indent=4))
@@ -153,7 +157,7 @@ class Request:
         doc_counter.update({collection_name: doc_counter[collection_name] + 1})
         doc_counter_file.write(json.dumps(doc_counter, indent=4))
         doc_counter_file.close()
-        print("Insertion was succesfully done!")
+        print("Insertion was successfully done!")
 
     def SEARCH(self, collection_name):
         """Full text search in specific 
@@ -163,8 +167,14 @@ class Request:
     def PRINT_INDEX(self, collection_name):
         """Show word-indexes pairs for specific 
         collection /collection_name/"""
-        # TODO: Complete functionality
-        pass
+        index_table = None
+        with open(collection_name + "/indexes.json", "r") as index_table_file:
+            index_table = json.loads(index_table_file.read())
+        for word in index_table.keys():
+            print(word + ":\n")
+            for doc in index_table[word].keys():
+                print("   d" + doc + " -> " + str(index_table[word][doc]))
+
 
 
 def info_global():
@@ -184,7 +194,7 @@ def info_global():
 def main():
     # Example:
     controller = Controller()
-    s = input()
+    s = 'CREATE col1; INSERT col1 "to be or not to be "; INSERT col1 "to go or not to go "; PRINT_INDEX col1;'
     controller.parse_code(s)
 
 
