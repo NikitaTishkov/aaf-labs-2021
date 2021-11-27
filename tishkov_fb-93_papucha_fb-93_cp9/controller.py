@@ -56,10 +56,19 @@ class Controller:
             self.request.CREATE(command.split()[1])
         elif command.split()[0].upper() == "INSERT":
             # call INSERT request
-            doc_str = command[command.find('"') + 1:command.rfind('"') - 1]
+            doc_str = command[command.find('"') + 1:command.rfind('"')]
             self.request.INSERT(command.split()[1], doc_str)
         elif command.split()[0].upper() == "SEARCH":
-            # TODO: call SEARCH request
+            # call SEARCH request
+            collection_name = command.split()[1]
+            search_keywords = list()
+            where_exist = False
+            for i, word in enumerate(command.split()):
+                if word == 'WHERE':
+                    where_exist = True
+                if where_exist and word != 'WHERE':
+                    search_keywords.append(word)
+            self.request.SEARCH(collection_name, search_keywords)
             print("SEARCH")
         elif command.split()[0].upper() == "PRINT_INDEX":
             # call PRINT_INDEX request
@@ -85,19 +94,17 @@ class Request:
             # It is better to add file name to error log
 
         try:
-            data_file = open(collection_name + "/data.txt", "w") 
-            data_file.write("collection_name: " + collection_name)
-            data_file.close()
+            with open(collection_name + "/data.json", "w") as data_file:
+                data = {}
+                data_file.write(json.dumps(data))
         except OSError as error:
             print("Could not open/read file")
             print(error)
             # It is better to add file name to error log
 
         try:
-            index_table_file = open(collection_name + "/indexes.json", "w")
-            index_table = '{}'
-            index_table_file.write(index_table)
-            index_table_file.close()
+            with open(collection_name + "/indexes.json", "w") as index_table_file:
+                index_table_file.write('{}')
         except OSError as error:
             print("Could not open/read file")
             print(error)
@@ -106,17 +113,15 @@ class Request:
         try:
             doc_counter = {}
             if not Path("doc_counter.json").exists():
-                doc_counter_file = open("doc_counter.json", "w")
-                doc_counter_file.write('{}')
-                doc_counter_file.close()
+                with open("doc_counter.json", "w") as doc_counter_file:
+                    doc_counter_file.write('{}')
             else: 
-                doc_counter_file = open("doc_counter.json", "r")
-                doc_counter = json.loads(doc_counter_file.read())
-                doc_counter_file.close()
+                with open("doc_counter.json", "r") as doc_counter_file:
+                    doc_counter = json.loads(doc_counter_file.read())
+
             doc_counter.update({collection_name: 0})
-            doc_counter_file = open("doc_counter.json", "w")
-            doc_counter_file.write(json.dumps(doc_counter, indent=4))
-            doc_counter_file.close()
+            with open("doc_counter.json", "w") as doc_counter_file:
+                doc_counter_file.write(json.dumps(doc_counter, indent=4))
         except OSError as error:
             print("Could not open/read file")
             print(error)
@@ -138,6 +143,7 @@ class Request:
         for word in doc_str.split():
             words_adr_list = list()
             docs_adr_dict = dict()
+            word = word.lower()
             if index_table.get(word) is not None:
                 docs_adr_dict = index_table.get(word)
                 if index_table.get(word).get(doc_counter[collection_name]) is not None:
@@ -150,19 +156,17 @@ class Request:
         index_table_file.write(json.dumps(index_table, indent=4))
         index_table_file.close()
 
-        data_file = open(collection_name + "/data.txt", "a")
-        data_file.write("\n\n\ndoc #" + str(doc_counter[collection_name]) + ":\n" + doc_str)
+        data_file = open(collection_name + "/data.json", "r")
+        data = json.loads(data_file.read())
+        data.update({doc_counter[collection_name]: doc_str})
         data_file.close()
+        with open(collection_name + "/data.json", "w") as data_file:
+            data_file.write(json.dumps(data))
         doc_counter_file = open("doc_counter.json", "w")
         doc_counter.update({collection_name: doc_counter[collection_name] + 1})
         doc_counter_file.write(json.dumps(doc_counter, indent=4))
         doc_counter_file.close()
         print("Insertion was successfully done!")
-
-    def SEARCH(self, collection_name):
-        """Full text search in specific 
-        collection /collection_name/"""
-        # TODO: Complete functionality
 
     def PRINT_INDEX(self, collection_name):
         """Show word-indexes pairs for specific 
@@ -175,6 +179,44 @@ class Request:
             for doc in index_table[word].keys():
                 print("   d" + doc + " -> " + str(index_table[word][doc]))
 
+    def SEARCH(self, collection_name, search_keywords):
+        """Full text search in specific
+        collection /collection_name/"""
+        if len(search_keywords) == 3 and search_keywords[1] == '-':
+            search_keywords.pop(1)
+            self.search_in_range(collection_name, search_keywords)
+        elif len(search_keywords) == 3 and search_keywords[1][0] == '<':
+            self.search_by_distance(collection_name, search_keywords)
+        elif len(search_keywords) == 2 and search_keywords[1] == '*':
+            search_keywords.pop(1)
+            self.search_by_part_of_word(collection_name, search_keywords)
+        elif len(search_keywords) == 1:
+            self.search_by_single_word(collection_name, search_keywords)
+        else:
+            print("Incorrect attributes for WHERE")
+
+    def search_by_single_word(self, collection_name, search_keyword):
+        keyword = search_keyword[0]
+        keyword = keyword[keyword.find('"') + 1:keyword.rfind('"')]
+        index_table = None
+        data = None
+        with open(collection_name + '/indexes.json', 'r') as index_table_file:
+            index_table = json.loads(index_table_file.read())
+        with open(collection_name + '/data.json') as data_file:
+            data = json.loads(data_file.read())
+        searching_word = index_table.get(keyword, None)
+        if searching_word is not None:
+            for doc_id in searching_word.keys():
+                print(data[doc_id])
+
+    def search_in_range(self, collection_name, search_keywords):
+        print(search_keywords)
+
+    def search_by_distance(self, collection_name, search_keywords):
+        print(search_keywords)
+
+    def search_by_part_of_word(self, collection_name, part_of_word):
+        print(part_of_word)
 
 
 def info_global():
@@ -194,7 +236,7 @@ def info_global():
 def main():
     # Example:
     controller = Controller()
-    s = 'CREATE col1; INSERT col1 "to be or not to be "; INSERT col1 "to go or not to go "; PRINT_INDEX col1;'
+    s = 'SEARCH col1 WHERE "to"'
     controller.parse_code(s)
 
 
