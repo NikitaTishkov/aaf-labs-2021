@@ -204,16 +204,50 @@ class Request:
             index_table = json.loads(index_table_file.read())
         with open(collection_name + '/data.json') as data_file:
             data = json.loads(data_file.read())
-        searching_word = index_table.get(keyword, None)
-        if searching_word is not None:
-            for doc_id in searching_word.keys():
+        keyword_index = index_table.get(keyword, None)
+        if keyword_index is not None:
+            for doc_id in keyword_index.keys():
                 print(data[doc_id])
 
     def search_in_range(self, collection_name, search_keywords):
         print(search_keywords)
 
     def search_by_distance(self, collection_name, search_keywords):
-        print(search_keywords)
+        index_table = None
+        data = None
+        with open(collection_name + '/indexes.json', 'r') as index_table_file:
+            index_table = json.loads(index_table_file.read())
+        with open(collection_name + '/data.json') as data_file:
+            data = json.loads(data_file.read())
+        keyword1 = search_keywords[0][search_keywords[0].find('"') + 1: search_keywords[0].rfind('"')]
+        keyword2 = search_keywords[2][search_keywords[2].find('"') + 1: search_keywords[2].rfind('"')]
+        distance = search_keywords[1][search_keywords[1].find('<') + 1]
+        keyword1_index = index_table.get(keyword1, None)
+        keyword2_index = index_table.get(keyword2, None)
+        if keyword1_index is None:
+            print('There is no word: ' + keyword1)
+            return None
+        elif keyword2_index is None:
+            print('There is no word: ' + keyword2)
+            return None
+        match_doc_ids = list()
+        search_doc_ids = list()
+        for doc_id_for_key1 in keyword1_index.keys():
+            for doc_id_for_key2 in keyword2_index.keys():
+                if doc_id_for_key1 == doc_id_for_key2:
+                    match_doc_ids.append(doc_id_for_key1)
+        for doc_id in match_doc_ids:
+            for i in keyword1_index[doc_id]:
+                is_match = False
+                for j in keyword2_index[doc_id]:
+                    if abs(i - j) == int(distance):
+                        search_doc_ids.append(doc_id)
+                        is_match = True
+                        break
+                if is_match:
+                    break
+        for doc_id in search_doc_ids:
+            print(data[doc_id])
 
     def search_by_part_of_word(self, collection_name, part_of_word):
         print(part_of_word)
@@ -236,7 +270,7 @@ def info_global():
 def main():
     # Example:
     controller = Controller()
-    s = 'SEARCH col1 WHERE "to"'
+    s = 'SEARCH col1 WHERE "to" <1> "go"'
     controller.parse_code(s)
 
 
