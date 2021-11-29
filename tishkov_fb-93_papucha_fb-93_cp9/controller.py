@@ -322,7 +322,7 @@ def info_global():
 def main():
     # Example:
     controller = Controller()
-    s = 'SEARCH col1 WHERE "b" *'
+    s = input('Write command: \n')
     controller.parse_code(s)
 
 
