@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import json
+import re
 from pathlib import Path
 
 
@@ -210,7 +211,37 @@ class Request:
                 print(data[doc_id])
 
     def search_in_range(self, collection_name, search_keywords):
-        print(search_keywords)
+        index_table = None
+        data = None
+        keyword1 = search_keywords[0]
+        keyword2 = search_keywords[1]
+        if len(keyword1) != len(keyword2):
+            print("Wrong usage of: -")
+            return None
+        with open(collection_name + '/indexes.json', 'r') as index_table_file:
+            index_table = json.loads(index_table_file.read())
+        with open(collection_name + '/data.json', 'r') as data_file:
+            data = json.loads(data_file.read())
+        pattern_str_list = list()
+        pattern_str_list.append('^')
+        for i in range(len(keyword1)):
+            if keyword1[i] == '"':
+                continue
+            pattern_str_list.append('[')
+            pattern_str_list.append(keyword1[i])
+            pattern_str_list.append('-')
+            pattern_str_list.append((keyword2[i]))
+            pattern_str_list.append(']')
+        pattern_str_list.append('$')
+        pattern_str = ''.join(pattern_str_list)
+        pattern = re.compile(r'' + pattern_str)
+        match_docs_list = set()
+        for word in index_table.keys():
+            if re.match(pattern, word) is not None:
+                for doc_id in index_table[word].keys():
+                    match_docs_list.add(doc_id)
+        for doc_id in match_docs_list:
+            print(data[doc_id])
 
     def search_by_distance(self, collection_name, search_keywords):
         index_table = None
@@ -250,7 +281,28 @@ class Request:
             print(data[doc_id])
 
     def search_by_part_of_word(self, collection_name, part_of_word):
-        print(part_of_word)
+        index_table = None
+        data = None
+        keyword = part_of_word[0]
+        with open(collection_name + '/indexes.json', 'r') as index_table_file:
+            index_table = json.loads(index_table_file.read())
+        with open(collection_name + '/data.json') as data_file:
+            data = json.loads(data_file.read())
+        pattern_str_list = list()
+        pattern_str_list.append('^')
+        for let in keyword:
+            if let != '"':
+                pattern_str_list.append(let)
+        pattern_str_list.append('\w*$')
+        pattern_str = ''.join(pattern_str_list)
+        pattern = re.compile(r'' + pattern_str)
+        match_docs_list = set()
+        for word in index_table.keys():
+            if re.match(pattern, word) is not None:
+                for doc_id in index_table[word].keys():
+                    match_docs_list.add(doc_id)
+        for doc_id in match_docs_list:
+            print(data[doc_id])
 
 
 def info_global():
@@ -270,7 +322,7 @@ def info_global():
 def main():
     # Example:
     controller = Controller()
-    s = 'SEARCH col1 WHERE "to" <1> "go"'
+    s = 'SEARCH col1 WHERE "b" *'
     controller.parse_code(s)
 
 
