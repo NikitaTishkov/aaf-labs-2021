@@ -320,10 +320,17 @@ def info_global():
 
 
 def main():
-    # Example:
+    info_global()
     controller = Controller()
-    s = input('Write command: \n')
-    controller.parse_code(s)
+    while(True):
+        msg = input('Enter command: \n')
+        print(msg)
+        print(type(msg))
+        print('print 0 if you want exit')
+        if msg == '0':
+            break
+        else:
+            controller.parse_code(msg)
 
 
 if __name__ == '__main__':
